@@ -57,7 +57,7 @@ export default defineComponent({
     </header>
     <section>
       <Image
-        src="/src/assets/max-ready-for-china.avif"
+        src="/src/assets/max-ready-for-china.jpg"
         alt="Max ready for China"
       />
     </section>
