@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        figure {
+            position: relative;
+            width: 700px;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <figure>
+        <img src="../assets/test-image-max.jpeg" alt="">
+    </figure>
+    <script>
+        const figure = document.querySelector('figure');
+        const rect = document.createElement('div');
+        rect.style.position = 'absolute';
+        rect.style.left = '39.97%';
+        rect.style.top = '4.51%';
+        rect.style.width = '54.99%';
+        rect.style.height = '95.20%';
+        rect.style.border = '2px solid red';
+        rect.style.boxSizing = 'border-box';
+        figure.appendChild(rect);
+    </script>
+</body>
+
+</html>
