@@ -2,11 +2,15 @@
   "name": "@aws-services/source",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "ts-node src/main.ts"
   },
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.556.0",
+    "@aws-sdk/client-s3": "^3.556.0",
+    "@cosmos/web": "^7.11.0",
     "aws-sdk": "^2.1605.0",
     "axios": "^1.6.8",
     "uuid": "^9.0.1"
