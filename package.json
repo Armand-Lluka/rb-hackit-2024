@@ -2,15 +2,22 @@
   "name": "@aws-services/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "ts-node src/main.ts"
+  },
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "aws-sdk": "^2.1605.0",
+    "axios": "^1.6.8",
+    "uuid": "^9.0.1"
+  },
   "devDependencies": {
     "@nx/js": "18.3.3",
     "@nx/workspace": "18.3.3",
     "@swc-node/register": "~1.8.0",
     "@swc/core": "~1.3.85",
     "@swc/helpers": "~0.5.2",
+    "dotenv": "^16.4.5",
     "nx": "18.3.3",
     "prettier": "^2.6.2",
     "typescript": "~5.4.2"
