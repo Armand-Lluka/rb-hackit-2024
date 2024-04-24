@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { S3, Rekognition } from 'aws-sdk';
+import { S3, Rekognition, config } from 'aws-sdk';
+import fs from 'fs';
 import axios from 'axios';
 
 interface ImageMetadata {
@@ -18,13 +19,17 @@ interface ImageS3Object {
 const s3 = new S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  sessionToken: process.env.AWS_SESSION_TOKEN,
 });
 
 const rekognition = new Rekognition({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: 'eu-west-1',
+  sessionToken: process.env.AWS_SESSION_TOKEN,
+  region: 'us-east-1',
 });
+
+// rego
 
 const products = [
   {
@@ -44,7 +49,7 @@ const products = [
   },
 ];
 
-const targetBucket = 'test-bucket2441';
+const bucket = 'awesome-test-bucket-2024';
 
 (async () => {
   try {
@@ -72,7 +77,7 @@ const targetBucket = 'test-bucket2441';
 
       // Upload images to S3
       const uploadPromises = imagesWithMetadata.map((image) =>
-        s3.upload({ ...image, Bucket: targetBucket }).promise()
+        s3.upload({ ...image, Bucket: bucket }).promise()
       );
 
       await Promise.all(uploadPromises);
@@ -81,21 +86,22 @@ const targetBucket = 'test-bucket2441';
         console.log('Uploaded image with metadata:', imageMetadata.Metadata);
 
         const imageS3Object = {
-          Bucket: targetBucket,
+          Bucket: bucket,
           Name: imageMetadata.Key,
         };
 
         // Use custom logic here to process image metadata (e.g., trigger Rekognition API)
         await processImageMetadata(imageS3Object, imageMetadata.Metadata);
       }
+
+      // Use Rekognition to label images
+      await createManifestFile();
     }
     console.log('Image labeling completed');
   } catch (error) {
     console.error('Error:', error);
   }
 })();
-
-s3;
 
 async function processImageMetadata(
   imageS3Object: ImageS3Object,
@@ -140,4 +146,50 @@ async function processImageMetadata(
       console.log(err); // an error occurred
     }
   }
+}
+
+async function createManifestFile() {
+  const objects = await s3.listObjectsV2({ Bucket: bucket }).promise();
+  const manifest = [] as Record<string, unknown>[];
+
+  for (const object of objects.Contents || []) {
+    if (object.Key) {
+      const tags = await s3
+        .getObjectTagging({ Bucket: bucket, Key: object.Key })
+        .promise();
+      const metadata = {} as Record<string, string>;
+
+      for (const tag of tags.TagSet || []) {
+        metadata[tag.Key] = tag.Value;
+      }
+
+      manifest.push({
+        'source-ref': `s3://${bucket}/${object.Key}`,
+        label: metadata,
+      });
+    }
+  }
+
+  // push this to s3 bucket
+
+  s3.upload(
+    {
+      Bucket: bucket,
+      Key: 'data.manifest',
+      Body: manifest.map((item) => JSON.stringify(item)).join('\n'),
+    },
+    (err, data) => {
+      if (err) {
+        console.error('Error uploading manifest:', err);
+      } else {
+        console.log('Manifest uploaded:', data);
+      }
+    }
+  );
+
+  fs.writeFileSync(
+    'data.manifest',
+    manifest.map((item) => JSON.stringify(item)).join('\n')
+  );
+  console.log('Manifest:', manifest);
 }
