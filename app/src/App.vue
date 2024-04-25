@@ -40,12 +40,12 @@ export default defineComponent({
         />
       </a>
       <nav class="header-nav">
-        <RouterLink to="/products">
+        <router-link to="/products">
           <CosmosText size="small" weight="medium">Products</CosmosText>
-        </RouterLink>
-        <RouterLink to="/upload">
+        </router-link>
+        <router-link to="/upload">
           <CosmosText size="small" weight="medium">File Upload</CosmosText>
-        </RouterLink>
+        </router-link>
       </nav>
       <a href="#" class="user">
         <CosmosIconUserFilled></CosmosIconUserFilled>

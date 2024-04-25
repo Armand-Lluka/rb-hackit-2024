@@ -78,8 +78,10 @@ export default defineComponent({
       const command = new DetectCustomLabelsCommand({
         ProjectVersionArn: import.meta.env.VITE_AWS_ARN_TEST_CUSTOM_MODEL,
         Image: { Bytes: imageBytes },
+        MinConfidence: 2
       });
       const { CustomLabels } = await rekognitionClient.send(command);
+      console.log(CustomLabels);
       return CustomLabels;
     };
 
@@ -87,7 +89,7 @@ export default defineComponent({
       return props.manualProductIds
         .map((productId, index) => {
           const product = productsJSON.find((p) => p.id === productId);
-          const utmDummySuffix = '?utm_source=rbr&utm_medium=referral&utm_campaign=rbr';
+          const utmDummySuffix = '&utm_source=rbr&utm_medium=referral&utm_campaign=rbr';
 
           if (!product) return null;
           return {

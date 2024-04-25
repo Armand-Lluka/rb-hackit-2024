@@ -51,11 +51,12 @@ export default defineComponent({
 <template>
   <CosmosMode mode="light">
     <section class="form">
-      <gravity-widget drag-handle="true" heading="Image Upload" body-padding="true">
+      <gravity-widget class="widget" drag-handle="true" heading="Image Upload" body-padding="true">
         <div slot="body">
           <GravityFileInput id="fileUpload" button-label="Choose File" label="File Input" size="medium" accept="image/*" @fileChange="updateImageSrc"></GravityFileInput>
             <div v-if="imageBlob">
             <Image
+              style="max-width: 800px"
               :src="imageBlob"
               id="image"
             />
@@ -67,9 +68,14 @@ export default defineComponent({
 </template>
 
 <style>
+
+  .widget {
+    min-width: 80vw;
+  }
+
   section {
     display: block;
-    margin: 0 auto;
+    margin: 50px auto;
     width: 100%;
   }
 

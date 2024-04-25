@@ -11,8 +11,9 @@ import {
   CosmosIconUserFilled,
   CosmosMode,
   CosmosText,
-  CosmosTitle
+  CosmosTitle,
 } from '@cosmos/web/vue';
+import { RouterLink } from 'vue-router';
 
 export default defineComponent({
   components: {
@@ -31,29 +32,6 @@ export default defineComponent({
 </script>
 
 <template>
-  <CosmosMode mode="dark">
-    <header>
-      <a href="#" class="logo">
-        <img
-          src="./assets/redbull-racing-logo.png"
-          alt="Red Bull Racing Logo"
-        />
-      </a>
-      <nav class="header-nav">
-        <RouterLink to="/products">
-          <CosmosText size="small" weight="medium">Products</CosmosText>
-        </RouterLink>
-        <RouterLink to="/upload">
-          <CosmosText size="small" weight="medium">File Upload</CosmosText>
-        </RouterLink>
-      </nav>
-      <a href="#" class="user">
-        <CosmosIconUserFilled></CosmosIconUserFilled>
-      </a>
-      <CosmosButton shape="circle" kind="tertiary" size="small" class="menu">
-        <CosmosIconMenu></CosmosIconMenu>
-      </CosmosButton>
-    </header>
     <section class="intro">
       <div class="intro-content">
         <img
@@ -229,7 +207,6 @@ export default defineComponent({
         >© 2024 Red Bull Racing Ltd</CosmosText
       >
     </footer>
-  </CosmosMode>
 </template>
 
 <style>
