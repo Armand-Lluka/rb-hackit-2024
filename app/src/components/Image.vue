@@ -10,7 +10,7 @@ import {
   RekognitionClient,
   DetectCustomLabelsCommand,
 } from '@aws-sdk/client-rekognition';
-import { S3Client } from '@aws-sdk/client-s3';
+import productsJSON from '../../../products.json';
 
 export default defineComponent({
   name: 'Image',
@@ -51,7 +51,6 @@ export default defineComponent({
     };
 
     const rekognitionClient = new RekognitionClient(awsConfig);
-    const s3Client = new S3Client(awsConfig);
 
     onMounted(async () => {
       try {
@@ -68,27 +67,39 @@ export default defineComponent({
           detectCustomLabelsCommand,
         );
 
+        console.log('Custom Labels Data:', customLabelsData);
+
         const labelMap = new Map();
 
         for (const label of customLabelsData.CustomLabels) {
-          const existingLabel = labelMap.get(label.Name);
-          if (!existingLabel || existingLabel.Confidence < label.Confidence) {
+          const product = productsJSON.find((p) => p.id === label.Name);
+          if (product) {
             labelMap.set(label.Name, {
               productId: label.Name,
+              productName: product.name || '',
+              productPage: product.productPage || '',
+              productImage:
+                product.productImages && product.productImages[0]
+                  ? product.productImages[0]
+                  : '',
               confidence: label.Confidence,
-              left: ((label.Geometry.BoundingBox.Left + label.Geometry.BoundingBox.Width / 2) * 100).toFixed(2),
-              top: ((label.Geometry.BoundingBox.Top + label.Geometry.BoundingBox.Height / 2) * 100).toFixed(2),
+              left: (
+                (label.Geometry.BoundingBox.Left +
+                  label.Geometry.BoundingBox.Width / 2) *
+                100
+              ).toFixed(2),
+              top: (
+                (label.Geometry.BoundingBox.Top +
+                  label.Geometry.BoundingBox.Height / 2) *
+                100
+              ).toFixed(2),
               width: (label.Geometry.BoundingBox.Width * 100).toFixed(2),
               height: (label.Geometry.BoundingBox.Height * 100).toFixed(2),
-              productLabel: '',
             });
           }
         }
 
         customLabels.value = Array.from(labelMap.values());
-
-        // Log the customLabels after it's been determined
-        console.log('Custom Labels:', customLabels.value);
       } catch (error) {
         console.error(`Error processing image ${props.src}:`, error);
       }
@@ -115,9 +126,9 @@ export default defineComponent({
       >
         <CosmosProductItem
           appearance="dark"
-          href="https://www.redbullshop.com/en-int/p/RBS-Fanblock-Cap/RBS23037/?preselectedVariant=M-165921"
-          image="https://assets.codepen.io/2454492/product-item-image-1.jpg"
-          :name="label.productId"
+          :href="label.productPage"
+          :image="label.productImage"
+          :name="label.productName"
           slot="content"
           target="_blank"
           text="Unisex"

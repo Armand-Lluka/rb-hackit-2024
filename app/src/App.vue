@@ -154,7 +154,7 @@ export default defineComponent({
     </section>
     <section class="hero">
       <Image
-        src="/src/assets/chestappen-delights-in-china.avif"
+        src="/src/assets/chestappen-delights-in-china.jpg"
         figcaption="Chestappen Delights In China"
       />
     </section>
