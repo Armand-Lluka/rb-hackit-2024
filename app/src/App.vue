@@ -238,3 +238,7 @@ export default defineComponent({
     </footer>
   </CosmosMode>
 </template>
+
+<style>
+@import '../node_modules/@cosmos/foundation/lib/primitives/font/default.css';
+</style>
