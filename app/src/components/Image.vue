@@ -12,24 +12,39 @@ import {
 } from '@aws-sdk/client-rekognition';
 import productsJSON from '../../../products.json';
 
+interface ProductLabel {
+  productId: string;
+  productName: string;
+  productPage: string;
+  productImage: string;
+  confidence: number | null;
+  left: number | null;
+  top: number | null;
+  width: number | null;
+  height: number | null;
+}
+
 export default defineComponent({
-  name: 'Image',
+  name: 'ImageComponent',
   props: {
     src: {
       type: String as PropType<string>,
       required: true,
     },
-    figcaption: {
-      type: String as PropType<string>,
-      default: '',
+    figcaption: String,
+    athleteName: String,
+    athleteAvatar: String,
+    manualProductIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
     },
-    athleteName: {
-      type: String as PropType<string>,
-      default: '',
+    manualLefts: {
+      type: Array as PropType<number[]>,
+      default: () => [],
     },
-    athleteAvatar: {
-      type: String as PropType<string>,
-      default: '',
+    manualTops: {
+      type: Array as PropType<number[]>,
+      default: () => [],
     },
   },
   components: {
@@ -39,7 +54,7 @@ export default defineComponent({
     CosmosProductItem,
   },
   setup(props) {
-    const customLabels = ref([]);
+    const customLabels = ref<ProductLabel[]>([]);
 
     const awsConfig = {
       region: 'us-east-1',
@@ -52,54 +67,83 @@ export default defineComponent({
 
     const rekognitionClient = new RekognitionClient(awsConfig);
 
+    const fetchImageBytes = async (imageUrl: string): Promise<Uint8Array> => {
+      const response = await fetch(imageUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      return new Uint8Array(arrayBuffer);
+    };
+
+    const detectLabels = async (imageBytes: Uint8Array): Promise<void> => {
+      const command = new DetectCustomLabelsCommand({
+        ProjectVersionArn: import.meta.env.VITE_AWS_ARN_TEST_CUSTOM_MODEL,
+        Image: { Bytes: imageBytes },
+      });
+      const { CustomLabels } = await rekognitionClient.send(command);
+      return CustomLabels;
+    };
+
+    const processManualLabels = (): ProductLabel[] => {
+      return props.manualProductIds
+        .map((productId, index) => {
+          const product = productsJSON.find((p) => p.id === productId);
+          if (!product) return null;
+          return {
+            productId,
+            productName: product.name || '',
+            productPage: product.productPage || '',
+            productImage: product.productImages?.[0] || '',
+            confidence: null,
+            left: props.manualLefts[index] || null,
+            top: props.manualTops[index] || null,
+            width: null,
+            height: null,
+          };
+        })
+        .filter((label): label is ProductLabel => label !== null);
+    };
+
+    const processDetectedLabels = (detectedLabels: any[]): ProductLabel[] => {
+      const labelMap = new Map<string, ProductLabel>();
+      detectedLabels.forEach((label) => {
+        const product = productsJSON.find((p) => p.id === label.Name);
+        if (!product) return;
+        labelMap.set(label.Name, {
+          productId: label.Name,
+          productName: product.name || '',
+          productPage: product.productPage || '',
+          productImage: product.productImages?.[0] || '',
+          confidence: label.Confidence,
+          left: Number(
+            (
+              (label.Geometry.BoundingBox.Left +
+                label.Geometry.BoundingBox.Width / 2) *
+              100
+            ).toFixed(2),
+          ),
+          top: Number(
+            (
+              (label.Geometry.BoundingBox.Top +
+                label.Geometry.BoundingBox.Height / 2) *
+              100
+            ).toFixed(2),
+          ),
+          width: Number((label.Geometry.BoundingBox.Width * 100).toFixed(2)),
+          height: Number((label.Geometry.BoundingBox.Height * 100).toFixed(2)),
+        });
+      });
+      return Array.from(labelMap.values());
+    };
+
     onMounted(async () => {
       try {
-        const imageUrl = new URL(props.src, import.meta.url).href;
-        const imageResponse = await fetch(imageUrl);
-        const imageArrayBuffer = await imageResponse.arrayBuffer();
-        const imageBytes = new Uint8Array(imageArrayBuffer);
-        const detectCustomLabelsCommand = new DetectCustomLabelsCommand({
-          ProjectVersionArn: import.meta.env.VITE_AWS_ARN_TEST_CUSTOM_MODEL,
-          Image: { Bytes: imageBytes },
-        });
-
-        const customLabelsData = await rekognitionClient.send(
-          detectCustomLabelsCommand,
-        );
-
-        console.log('Custom Labels Data:', customLabelsData);
-
-        const labelMap = new Map();
-
-        for (const label of customLabelsData.CustomLabels) {
-          const product = productsJSON.find((p) => p.id === label.Name);
-          if (product) {
-            labelMap.set(label.Name, {
-              productId: label.Name,
-              productName: product.name || '',
-              productPage: product.productPage || '',
-              productImage:
-                product.productImages && product.productImages[0]
-                  ? product.productImages[0]
-                  : '',
-              confidence: label.Confidence,
-              left: (
-                (label.Geometry.BoundingBox.Left +
-                  label.Geometry.BoundingBox.Width / 2) *
-                100
-              ).toFixed(2),
-              top: (
-                (label.Geometry.BoundingBox.Top +
-                  label.Geometry.BoundingBox.Height / 2) *
-                100
-              ).toFixed(2),
-              width: (label.Geometry.BoundingBox.Width * 100).toFixed(2),
-              height: (label.Geometry.BoundingBox.Height * 100).toFixed(2),
-            });
-          }
+        if (props.manualProductIds.length) {
+          customLabels.value = processManualLabels();
+        } else {
+          const imageUrl = new URL(props.src, import.meta.url).href;
+          const imageBytes = await fetchImageBytes(imageUrl);
+          const detectedLabels = await detectLabels(imageBytes);
+          customLabels.value = processDetectedLabels(detectedLabels);
         }
-
-        customLabels.value = Array.from(labelMap.values());
       } catch (error) {
         console.error(`Error processing image ${props.src}:`, error);
       }

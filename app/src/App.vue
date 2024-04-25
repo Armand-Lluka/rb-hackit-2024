@@ -112,10 +112,13 @@ export default defineComponent({
     </section>
     <section class="split">
       <Image
-        src="/src/assets/max-ready-for-china.jpg"
+        :manual-product-ids="['RBRXM022']"
+        :manual-lefts="[40]"
+        :manual-tops="[20]"
         athlete-avatar="/src/assets/max-avatar.jpg"
         athlete-name="Max Verstappen"
         figcaption="Max Ready For China"
+        src="/src/assets/max-ready-for-china.jpg"
       />
       <div class="quote">
         <CosmosIconFormatQuote></CosmosIconFormatQuote>
@@ -146,16 +149,22 @@ export default defineComponent({
         </CosmosTitle>
       </div>
       <Image
-        src="/src/assets/checos-confidence-shines.jpg"
+        :manual-product-ids="['RBRXM022']"
+        :manual-lefts="[40]"
+        :manual-tops="[25]"
         athlete-avatar="/src/assets/checo-avatar.jpg"
         athlete-name="Sergio Perez"
         figcaption="Checo's Confidence Shines"
+        src="/src/assets/checos-confidence-shines.jpg"
       />
     </section>
     <section class="hero">
       <Image
         src="/src/assets/chestappen-delights-in-china.jpg"
         figcaption="Chestappen Delights In China"
+        :manual-product-ids="['RBRXM022', 'RBRXM022']"
+        :manual-lefts="[40, 60]"
+        :manual-tops="[25, 20]"
       />
     </section>
     <footer>
