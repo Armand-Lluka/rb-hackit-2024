@@ -149,6 +149,15 @@ export default defineComponent({
         </CosmosTitle>
       </div>
       <Image
+        src="/src/assets/sergio-perez-bahrain-grand-prix-2024.jpg"
+        figcaption="Bahrain Grand Prix 2024"
+        :manual-product-ids="['RBR23258']"
+        :manual-lefts="[35]"
+        :manual-tops="[71]"
+      />
+    </section>
+    <section class="hero">
+      <Image
         :manual-lefts="[58]"
         :manual-product-ids="['RBR24311']"
         :manual-tops="[19]"
@@ -156,15 +165,6 @@ export default defineComponent({
         athlete-name="Sergio Perez"
         figcaption="Checo's Confidence Shines"
         src="/src/assets/chestappen-delights-in-china.jpg"
-      />
-    </section>
-    <section class="hero">
-      <Image
-        src="/src/assets/max-verstappen-bahrain-grand-prix-2024.jpg"
-        figcaption="Chestappen Delights In China"
-        :manual-product-ids="['RBR23258']"
-        :manual-lefts="[60]"
-        :manual-tops="[80]"
       />
     </section>
     <footer>

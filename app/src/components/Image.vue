@@ -193,7 +193,7 @@ export default defineComponent({
         </a>
         <button class="badge">
           <CosmosIconLabel></CosmosIconLabel>
-          <CosmosText size="x-small">Tagged Products</CosmosText>
+          <CosmosText size="x-small">Shoppable Products</CosmosText>
         </button>
       </div>
     </figure>
@@ -217,6 +217,9 @@ figure {
 img {
   max-height: 100%;
   max-width: 100%;
+}
+figure:hover .marker {
+  visibility: visible;
 }
 figcaption {
   position: absolute;
@@ -261,6 +264,7 @@ figcaption {
   position: absolute;
   transition: all 0.2s;
   width: var(--markerSize);
+  visibility: hidden;
 }
 
 .marker:active {
