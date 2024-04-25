@@ -87,11 +87,13 @@ export default defineComponent({
       return props.manualProductIds
         .map((productId, index) => {
           const product = productsJSON.find((p) => p.id === productId);
+          const utmDummySuffix = '?utm_source=rbr&utm_medium=referral&utm_campaign=rbr';
+
           if (!product) return null;
           return {
             productId,
             productName: product.name || '',
-            productPage: product.productPage || '',
+            productPage: product.productPage + utmDummySuffix || '',
             productImage: product.productImages?.[0] || '',
             confidence: null,
             left: props.manualLefts[index] || null,
@@ -172,36 +174,17 @@ export default defineComponent({
         <CosmosText kind="subtle" size="xx-small">© Getty Images</CosmosText>
       </figcaption>
 
-      <CosmosTooltip
-        v-for="label in customLabels"
-        :key="label.name"
-        appearance="light"
-        :visible="tooltipsVisible"
-        class="tooltip"
-      >
-        <CosmosProductItem
-          appearance="dark"
-          :href="label.productPage"
-          :image="label.productImage"
-          :name="label.productName"
-          slot="content"
-          target="_blank"
-          text="Shop now"
-        ></CosmosProductItem>
-        <div
-          class="marker"
-          :style="{
-            left: `${Math.max(parseFloat(label.left), 10)}%`,
-            top: `${Math.max(parseFloat(label.top), 10)}%`,
-          }"
-        ></div>
+      <CosmosTooltip v-for="label in customLabels" :key="label.name" appearance="light" :visible="tooltipsVisible"
+        class="tooltip">
+        <CosmosProductItem appearance="dark" :href="label.productPage" :image="label.productImage"
+          :name="label.productName" slot="content" target="_blank" text="Shop now"></CosmosProductItem>
+        <div class="marker" :style="{
+      left: `${Math.max(parseFloat(label.left), 10)}%`,
+      top: `${Math.max(parseFloat(label.top), 10)}%`,
+    }"></div>
       </CosmosTooltip>
 
       <div class="badges">
-        <a class="badge" v-if="athleteName && athleteAvatar">
-          <img :src="athleteAvatar" :alt="athleteName" />
-          <CosmosText size="x-small">{{ athleteName }}</CosmosText>
-        </a>
         <button class="badge" @click="toggleTooltips">
           <CosmosIconLabel></CosmosIconLabel>
           <CosmosText size="x-small">Shoppable Products</CosmosText>
@@ -219,25 +202,30 @@ export default defineComponent({
   width: 100%;
   align-items: center;
 }
+
 figure {
   all: unset;
   max-height: 100%;
   max-width: 100%;
   position: relative;
 }
+
 img {
   max-height: 100%;
   max-width: 100%;
 }
+
 figure:hover .marker {
   visibility: visible;
 }
+
 figcaption {
   position: absolute;
   margin-top: 8px;
   display: grid;
   gap: 4px;
 }
+
 .badges {
   bottom: 8px;
   display: flex;
@@ -245,6 +233,7 @@ figcaption {
   left: 8px;
   position: absolute;
 }
+
 .badge {
   all: unset;
   align-items: center;
@@ -256,12 +245,14 @@ figcaption {
   gap: 8px;
   padding: 4px 8px 4px 4px;
 }
+
 .badge img {
   aspect-ratio: 1;
   border-radius: 999px;
   object-fit: cover;
   width: 20px;
 }
+
 .marker {
   --color: rgb(27, 106, 238);
   --markerSize: 10px;
@@ -286,9 +277,11 @@ figcaption {
   from {
     box-shadow: 0 0 0 0 var(--color);
   }
+
   70% {
     box-shadow: 0 0 0 var(--markerSize) var(--transparentBlue);
   }
+
   to {
     box-shadow: 0 0 0 0 var(--transparentBlue);
   }
