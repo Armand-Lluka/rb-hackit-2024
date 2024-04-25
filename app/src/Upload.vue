@@ -1,0 +1,82 @@
+<script lang="ts">
+import { PropType, defineComponent, ref } from 'vue';
+import {
+  CosmosButton,
+  CosmosFlag,
+  CosmosIconFormatQuote,
+  CosmosIconMenu,
+  CosmosIconUserFilled,
+  CosmosMode,
+  CosmosText,
+  CosmosTitle,
+  CosmosInput
+} from '@cosmos/web/vue';
+
+import Image from './components/Image.vue';
+import './style.css';
+import { GravityFileInput } from '@gravity/web-components-vue3';
+import { GravityWidget } from '@gravity/web-components-vue3';
+
+export default defineComponent({
+  components: {
+    CosmosButton,
+    CosmosFlag,
+    CosmosIconFormatQuote,
+    CosmosIconMenu,
+    CosmosIconUserFilled,
+    CosmosMode,
+    CosmosText,
+    CosmosTitle,
+    Image,
+    CosmosInput,
+    GravityFileInput,
+    GravityWidget
+  },
+  setup() {
+
+    const imageBlob = ref(null);
+
+    const updateImageSrc = (event) => {
+      console.log(event.detail);
+      const image = URL.createObjectURL(event.detail[0]);
+      imageBlob.value = image;
+    }
+
+    return {updateImageSrc, imageBlob}
+  }
+});
+
+</script>
+
+<template>
+  <CosmosMode mode="light">
+    <section class="form">
+      <gravity-widget drag-handle="true" heading="Image Upload" body-padding="true">
+        <div slot="body">
+          <GravityFileInput id="fileUpload" button-label="Choose File" label="File Input" size="medium" accept="image/*" @fileChange="updateImageSrc"></GravityFileInput>
+            <div v-if="imageBlob">
+            <Image
+              :src="imageBlob"
+              id="image"
+            />
+          </div>
+        </div>
+      </gravity-widget>
+    </section>
+  </CosmosMode>
+</template>
+
+<style>
+  section {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .form {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
+</style>
