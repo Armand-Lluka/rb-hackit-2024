@@ -55,6 +55,7 @@ export default defineComponent({
   },
   setup(props) {
     const customLabels = ref<ProductLabel[]>([]);
+    const tooltipsVisible = ref<boolean>(false);
 
     const awsConfig = {
       region: 'us-east-1',
@@ -149,14 +150,22 @@ export default defineComponent({
       }
     });
 
-    return { customLabels };
+    const toggleTooltips = () => {
+      tooltipsVisible.value = !tooltipsVisible.value;
+    };
+
+    const hideTooltips = () => {
+      tooltipsVisible.value = false;
+    };
+
+    return { customLabels, tooltipsVisible, toggleTooltips, hideTooltips };
   },
 });
 </script>
 
 <template>
   <div class="container">
-    <figure>
+    <figure @mouseleave="hideTooltips">
       <img :src="src" :alt="figcaption" />
       <figcaption v-if="figcaption">
         <CosmosText size="x-small">{{ figcaption }}</CosmosText>
@@ -167,6 +176,8 @@ export default defineComponent({
         v-for="label in customLabels"
         :key="label.name"
         appearance="light"
+        :visible="tooltipsVisible"
+        class="tooltip"
       >
         <CosmosProductItem
           appearance="dark"
@@ -175,7 +186,7 @@ export default defineComponent({
           :name="label.productName"
           slot="content"
           target="_blank"
-          text="Unisex"
+          text="Shop now"
         ></CosmosProductItem>
         <div
           class="marker"
@@ -191,7 +202,7 @@ export default defineComponent({
           <img :src="athleteAvatar" :alt="athleteName" />
           <CosmosText size="x-small">{{ athleteName }}</CosmosText>
         </a>
-        <button class="badge">
+        <button class="badge" @click="toggleTooltips">
           <CosmosIconLabel></CosmosIconLabel>
           <CosmosText size="x-small">Shoppable Products</CosmosText>
         </button>
