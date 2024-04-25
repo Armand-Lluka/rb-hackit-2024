@@ -112,7 +112,7 @@ export default defineComponent({
     </section>
     <section class="split">
       <Image
-        :manual-product-ids="['RBRXM022']"
+        :manual-product-ids="['RBR24067']"
         :manual-lefts="[40]"
         :manual-tops="[20]"
         athlete-avatar="/src/assets/max-avatar.jpg"
@@ -149,22 +149,22 @@ export default defineComponent({
         </CosmosTitle>
       </div>
       <Image
-        :manual-product-ids="['RBRXM022']"
-        :manual-lefts="[40]"
-        :manual-tops="[25]"
+        :manual-lefts="[58]"
+        :manual-product-ids="['RBR24311']"
+        :manual-tops="[19]"
         athlete-avatar="/src/assets/checo-avatar.jpg"
         athlete-name="Sergio Perez"
         figcaption="Checo's Confidence Shines"
-        src="/src/assets/checos-confidence-shines.jpg"
+        src="/src/assets/chestappen-delights-in-china.jpg"
       />
     </section>
     <section class="hero">
       <Image
-        src="/src/assets/chestappen-delights-in-china.jpg"
+        src="/src/assets/max-verstappen-bahrain-grand-prix-2024.jpg"
         figcaption="Chestappen Delights In China"
-        :manual-product-ids="['RBRXM022', 'RBRXM022']"
-        :manual-lefts="[40, 60]"
-        :manual-tops="[25, 20]"
+        :manual-product-ids="['RBR23258']"
+        :manual-lefts="[60]"
+        :manual-tops="[80]"
       />
     </section>
     <footer>
