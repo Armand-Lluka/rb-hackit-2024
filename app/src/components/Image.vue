@@ -10,6 +10,7 @@ import {
   RekognitionClient,
   DetectCustomLabelsCommand,
 } from '@aws-sdk/client-rekognition';
+import { S3Client } from '@aws-sdk/client-s3';
 
 export default defineComponent({
   name: 'Image',
@@ -18,7 +19,15 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
-    alt: {
+    figcaption: {
+      type: String as PropType<string>,
+      default: '',
+    },
+    athleteName: {
+      type: String as PropType<string>,
+      default: '',
+    },
+    athleteAvatar: {
       type: String as PropType<string>,
       default: '',
     },
@@ -41,9 +50,8 @@ export default defineComponent({
       },
     };
 
-    console.log('test', import.meta);
-
     const rekognitionClient = new RekognitionClient(awsConfig);
+    const s3Client = new S3Client(awsConfig);
 
     onMounted(async () => {
       try {
@@ -59,16 +67,28 @@ export default defineComponent({
         const customLabelsData = await rekognitionClient.send(
           detectCustomLabelsCommand,
         );
-        console.log(`Detected custom labels for: ${props.src}`);
-        customLabelsData.CustomLabels?.forEach((label) => {
-          console.log(`Label:      ${label.Name}`);
-          console.log(`Confidence: ${label.Confidence}`);
-          console.log(`Geometry: ${JSON.stringify(label.Geometry)}`);
-          console.log(
-            `Available properties on label: ${Object.keys(label).join(', ')}`,
-          );
-          console.log('--------------------------------------------------');
-        });
+
+        const labelMap = new Map();
+
+        for (const label of customLabelsData.CustomLabels) {
+          const existingLabel = labelMap.get(label.Name);
+          if (!existingLabel || existingLabel.Confidence < label.Confidence) {
+            labelMap.set(label.Name, {
+              productId: label.Name,
+              confidence: label.Confidence,
+              left: (label.Geometry.BoundingBox.Left * 100).toFixed(2),
+              top: (label.Geometry.BoundingBox.Top * 100).toFixed(2),
+              width: (label.Geometry.BoundingBox.Width * 100).toFixed(2),
+              height: (label.Geometry.BoundingBox.Height * 100).toFixed(2),
+              productLabel: '',
+            });
+          }
+        }
+
+        customLabels.value = Array.from(labelMap.values());
+
+        // Log the customLabels after it's been determined
+        console.log('Custom Labels:', customLabels.value);
       } catch (error) {
         console.error(`Error processing image ${props.src}:`, error);
       }
@@ -82,23 +102,39 @@ export default defineComponent({
 <template>
   <div class="container">
     <figure>
-      <img :src="src" :alt="alt" />
-      <CosmosTooltip visible appearance="light">
+      <img :src="src" :alt="figcaption" />
+      <figcaption v-if="figcaption">
+        <CosmosText size="x-small">{{ figcaption }}</CosmosText>
+        <CosmosText kind="subtle" size="xx-small">© Getty Images</CosmosText>
+      </figcaption>
+
+      <CosmosTooltip
+        v-for="label in customLabels"
+        :key="label.name"
+        appearance="light"
+      >
         <CosmosProductItem
           appearance="dark"
           href="https://www.redbullshop.com/en-int/p/RBS-Fanblock-Cap/RBS23037/?preselectedVariant=M-165921"
           image="https://assets.codepen.io/2454492/product-item-image-1.jpg"
-          name="Red Bull Salzburg Fanblock Cap"
+          :name="label.productId"
           slot="content"
           target="_blank"
           text="Unisex"
         ></CosmosProductItem>
-        <div class="marker" style="left: 50%; top: 50%"></div>
+        <div
+          class="marker"
+          :style="{
+            left: `${Math.max(parseFloat(label.left), 10)}%`,
+            top: `${Math.max(parseFloat(label.top), 10)}%`,
+          }"
+        ></div>
       </CosmosTooltip>
+
       <div class="badges">
-        <a class="badge">
-          <img src="/src/assets/max-avatar.jpg" alt="" />
-          <CosmosText size="x-small">Max Verstappen</CosmosText>
+        <a class="badge" v-if="athleteName && athleteAvatar">
+          <img :src="athleteAvatar" :alt="athleteName" />
+          <CosmosText size="x-small">{{ athleteName }}</CosmosText>
         </a>
         <button class="badge">
           <CosmosIconLabel></CosmosIconLabel>
@@ -115,6 +151,7 @@ export default defineComponent({
   height: 100%;
   justify-content: center;
   width: 100%;
+  align-items: center;
 }
 figure {
   all: unset;
@@ -125,6 +162,12 @@ figure {
 img {
   max-height: 100%;
   max-width: 100%;
+}
+figcaption {
+  position: absolute;
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
 }
 .badges {
   bottom: 8px;
