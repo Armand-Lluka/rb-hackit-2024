@@ -76,8 +76,8 @@ export default defineComponent({
             labelMap.set(label.Name, {
               productId: label.Name,
               confidence: label.Confidence,
-              left: (label.Geometry.BoundingBox.Left * 100).toFixed(2),
-              top: (label.Geometry.BoundingBox.Top * 100).toFixed(2),
+              left: ((label.Geometry.BoundingBox.Left + label.Geometry.BoundingBox.Width / 2) * 100).toFixed(2),
+              top: ((label.Geometry.BoundingBox.Top + label.Geometry.BoundingBox.Height / 2) * 100).toFixed(2),
               width: (label.Geometry.BoundingBox.Width * 100).toFixed(2),
               height: (label.Geometry.BoundingBox.Height * 100).toFixed(2),
               productLabel: '',
