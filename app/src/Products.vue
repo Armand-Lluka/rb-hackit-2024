@@ -73,7 +73,7 @@ export default defineComponent({
   <section class="split">
     <Image :manual-product-ids="['RBR24067']" :manual-lefts="[40]" :manual-tops="[20]"
       athlete-avatar="/src/assets/max-avatar.jpg" athlete-name="Max Verstappen" figcaption="Max Ready For China"
-      src="/src/assets/max-ready-for-china.jpg" />
+      src="/max-ready-for-china.jpg" />
     <div class="quote">
       <CosmosIconFormatQuote></CosmosIconFormatQuote>
       <CosmosTitle size="large">
@@ -100,13 +100,13 @@ export default defineComponent({
         </span>
       </CosmosTitle>
     </div>
-    <Image src="/src/assets/sergio-perez-bahrain-grand-prix-2024.jpg" figcaption="Bahrain Grand Prix 2024"
+    <Image src="/sergio-perez-bahrain-grand-prix-2024.jpg" figcaption="Bahrain Grand Prix 2024"
       :manual-product-ids="['RBR23258']" :manual-lefts="[35]" :manual-tops="[71]" />
   </section>
   <section class="hero">
     <Image :manual-lefts="[58]" :manual-product-ids="['RBR24311']" :manual-tops="[19]"
       athlete-avatar="/src/assets/checo-avatar.jpg" athlete-name="Sergio Perez" figcaption="Checo's Confidence Shines"
-      src="/src/assets/chestappen-delights-in-china.jpg" />
+      src="/chestappen-delights-in-china.jpg" />
   </section>
   <footer>
     <nav class="footer-nav">
