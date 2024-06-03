@@ -1,5 +1,5 @@
 <script lang="ts">
-import { PropType, defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import {
   CosmosButton,
   CosmosFlag,
@@ -11,11 +11,12 @@ import {
   CosmosTitle,
   CosmosInput
 } from '@cosmos/web/vue';
+import { Ref } from 'vue';
 
 import Image from './components/Image.vue';
 import './style.css';
-import { GravityFileInput } from '@gravity/web-components-vue3';
-import { GravityWidget } from '@gravity/web-components-vue3';
+import { GravityFileInput, GravityWidget } from '@gravity/web-components-vue3';
+import { GravityFileInputCustomEvent } from '@gravity/web-components';
 
 export default defineComponent({
   components: {
@@ -34,15 +35,15 @@ export default defineComponent({
   },
   setup() {
 
-    const imageBlob = ref(null);
 
-    const updateImageSrc = (event) => {
+    const imageBlob: Ref<string | null> = ref(null);
+    const updateImageSrc = (event: GravityFileInputCustomEvent<FileList | null>) => {
       console.log(event.detail);
-      const image = URL.createObjectURL(event.detail[0]);
+      const image = URL.createObjectURL(event.detail![0]);
       imageBlob.value = image;
     }
 
-    return {updateImageSrc, imageBlob}
+    return { updateImageSrc, imageBlob }
   }
 });
 
@@ -51,15 +52,12 @@ export default defineComponent({
 <template>
   <CosmosMode mode="light">
     <section class="form">
-      <gravity-widget class="widget" drag-handle="true" heading="Image Upload" body-padding="true">
+      <gravity-widget class="widget" :drag-handle="true" heading="Image Upload" :body-padding="true">
         <div slot="body">
-          <GravityFileInput id="fileUpload" button-label="Choose File" label="File Input" size="medium" accept="image/*" @fileChange="updateImageSrc"></GravityFileInput>
-            <div v-if="imageBlob">
-            <Image
-              style="max-width: 800px"
-              :src="imageBlob"
-              id="image"
-            />
+          <GravityFileInput id="fileUpload" button-label="Choose File" label="File Input" size="medium" accept="image/*"
+            @fileChange="updateImageSrc"></GravityFileInput>
+          <div v-if="imageBlob">
+            <Image style="max-width: 800px" :src="imageBlob" id="image" />
           </div>
         </div>
       </gravity-widget>
@@ -68,21 +66,20 @@ export default defineComponent({
 </template>
 
 <style>
+.widget {
+  min-width: 80vw;
+}
 
-  .widget {
-    min-width: 80vw;
-  }
+section {
+  display: block;
+  margin: 50px auto;
+  width: 100%;
+}
 
-  section {
-    display: block;
-    margin: 50px auto;
-    width: 100%;
-  }
-
-  .form {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex: 1;
-  }
+.form {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex: 1;
+}
 </style>

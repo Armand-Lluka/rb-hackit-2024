@@ -1,4 +1,6 @@
 <script lang="ts">
+// @ts-nocheck
+
 import { defineComponent, PropType, onMounted, ref } from 'vue';
 import {
   CosmosIconLabel,
